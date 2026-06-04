@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Data
+data/
+
+# Results
+results/
+
+# Jupyter Notebooks
+*.ipynb
+.ipynb_checkpoints/
+
+# Models
+models/
+models.zip
+
+# Archives
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+
+# Logs
+*.log
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# OS Files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Virtual Environments
+venv/
+.venv/
+env/
+
+# Project-specific
+text progress.txt

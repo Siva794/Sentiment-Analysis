@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emotion Intelligence Engine</title>
+<link rel="stylesheet" href="frontend/styles.css">
+</head>
+
+<body>
+<div class="page-shell">
+
+<header class="header">
+    <div class="brand">
+        <div class="brand-title">Emotion Intelligence Engine</div>
+        <div class="brand-subtitle">Efficient On-Device NLP System</div>
+    </div>
+
+    <div class="header-badges">
+        <span class="badge">DistilBERT</span>
+        <span class="badge accent">INT8 Ready</span>
+    </div>
+</header>
+
+<main class="grid">
+
+<section class="panel left">
+                <h3>🧠 Model Overview</h3>
+                <p>
+                    A lightweight <b>DistilBERT transformer</b> optimized for efficient on-device NLP,
+                    designed to perform multi-class emotion classification with strong accuracy and low overhead.
+                </p>
+
+                <h3>📚 Dataset</h3>
+                <p>
+                    Trained on <b>422K+ samples</b> across six emotion classes:
+                    joy, sadness, anger, fear, love, and surprise.
+                </p>
+
+                <h3>⚙️ Optimization</h3>
+                <ul>
+                    <li>Mixed Precision Training (AMP)</li>
+                    <li>Post-training INT8 Quantization</li>
+                    <li>Reduced memory footprint</li>
+                    <li>Smaller model storage size</li>
+                </ul>
+
+                <h3>📈 Performance</h3>
+                <div class="metric-card">
+                    <div class="metric"><span>Accuracy</span><strong>95.12%</strong></div>
+                    <div class="metric"><span>F1 Score</span><strong>94.93%</strong></div>
+                    <div class="metric"><span>Size Reduction</span><strong>~48%</strong></div>
+                </div>
+            </section>
+
+<section class="panel center">
+    <div class="center-head">
+        <h2>Analyze Text</h2>
+        <p>Enter text to detect emotion.</p>
+    </div>
+
+    <textarea id="inputText" placeholder="Type your sentence here..."></textarea>
+
+    <button id="analyzeBtn" onclick="analyze()">Analyze</button>
+
+    <div class="loader" id="loader" style="display:none;"></div>
+
+    <div class="output-card">
+        <div class="output-label">Prediction</div>
+        <div class="output" id="output"></div>
+        <div class="confidence-text" id="confidenceText"></div>
+        <div class="confidence" id="confidenceBox" style="opacity:0;">
+            <div class="confidence-bar" id="confidenceBar"></div>
+        </div>
+    </div>
+</section>
+
+<section class="panel right">
+                <h3>🎭 Emotion Classes</h3>
+                <div class="list">
+                    <span>😊 Joy</span>
+                    <span>😢 Sadness</span>
+                    <span>😡 Anger</span>
+                    <span>😨 Fear</span>
+                    <span>❤️ Love</span>
+                    <span>😲 Surprise</span>
+                </div>
+
+                <h3>ℹ️ About System</h3>
+                <p class="desc">
+                    This AI system analyzes text input and detects emotional tone in real time.
+                    It is designed for efficient deployment on resource-constrained devices while
+                    keeping the interface simple, responsive, and production-like.
+                </p>
+
+                <div class="mini-notes">
+                    <div class="note">
+                        <span class="note-label">Mode</span>
+                        <span class="note-value">Live Inference</span>
+                    </div>
+                    <div class="note">
+                        <span class="note-label">Output</span>
+                        <span class="note-value">Emotion + Confidence</span>
+                    </div>
+                </div>
+            </section>
+
+</main>
+
+<footer class="footer">
+            <span>Emotion Intelligence Engine</span>
+            <span>On-device NLP</span>
+            <span>FP32 → INT8 Optimization</span>
+        </footer>
+
+</div>
+
+<script>
+const API_URL = "/predict";  // ✅ FIXED
+
+async function analyze() {
+    const text = document.getElementById("inputText").value.trim();
+    const btn = document.getElementById("analyzeBtn");
+    const loader = document.getElementById("loader");
+    const output = document.getElementById("output");
+    const confidenceBox = document.getElementById("confidenceBox");
+    const confidenceBar = document.getElementById("confidenceBar");
+    const confidenceText = document.getElementById("confidenceText");
+
+    if (!text) {
+        output.innerHTML = "Please enter text.";
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Analyzing...";
+    loader.style.display = "block";
+    output.innerHTML = "";
+    confidenceBox.style.opacity = 0;
+
+    try {
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ text })
+        });
+
+        const data = await res.json();
+
+        const emotion = (data.prediction || "").toLowerCase(); // ✅ FIXED
+
+        const emojiMap = {
+            joy: "😊",
+            sad: "😢",
+            sadness: "😢",
+            anger: "😡",
+            fear: "😨",
+            love: "❤️",
+            surprise: "😲"
+        };
+
+        output.innerHTML = `
+            <span class="result-text">${emotion.toUpperCase()}</span>
+            <span class="emoji">${emojiMap[emotion] || "🙂"}</span>
+        `;
+
+        if (data.confidence) {
+            const percent = Math.round(data.confidence * 100);
+            confidenceBar.style.width = percent + "%";
+            confidenceBox.style.opacity = 1;
+            confidenceText.innerText = "Confidence: " + percent + "%";
+        }
+
+    } catch (err) {
+        output.innerHTML = "Error connecting to server";
+    } finally {
+        loader.style.display = "none";
+        btn.disabled = false;
+        btn.textContent = "Analyze";
+    }
+}
+
+// 🔥 Enter key support
+document.getElementById("inputText").addEventListener("keydown", function(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        analyze();
+    }
+});
+</script>
+
+</body>
+</html>
