@@ -1,0 +1,19 @@
+{
+  "run_name": "emotion_distilbert_amp_final",
+  "model_name": "distilbert-base-uncased",
+  "max_len": 128,
+  "batch_size": 16,
+  "epochs_configured": 3,
+  "lr": 2e-05,
+  "weight_decay": 0.01,
+  "warmup_ratio": 0.1,
+  "test_ratio": 0.1,
+  "val_ratio": 0.1,
+  "sample_size": null,
+  "use_amp": true,
+  "device": "cuda",
+  "best_epoch": 2,
+  "best_val_f1": 0.942421,
+  "final_test_accuracy": 0.942708,
+  "final_test_f1": 0.940416
+}
